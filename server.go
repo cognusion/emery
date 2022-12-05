@@ -38,7 +38,7 @@ func startHTTPServer() {
 
 	http.Handle("/", http.StripPrefix("/", newImageHTTPHandler()))
 	if hmacKey != "" {
-		hs := hmac.NewSigner([]byte(hmacKey), hmacDuration)
+		hs := hmac.NewSigner([]byte(hmacKey), []byte(hmacSalt), hmacDuration)
 
 		http.Handle("/_sign/", http.StripPrefix("/_sign/", hs))
 	}
@@ -74,7 +74,7 @@ func newServer() imageserver.Server {
 	srv = newServerImage(srv)
 	srv = newServerGroupcache(srv)
 	if hmacKey != "" {
-		srv = hmac.NewVerifier(srv, hmacKey, hmacDuration)
+		srv = hmac.NewVerifier(srv, hmacKey, hmacSalt, hmacDuration)
 	}
 	return srv
 }

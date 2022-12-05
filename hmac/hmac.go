@@ -25,14 +25,16 @@ const (
 type Verifier struct {
 	Next       imageserver.Server
 	key        []byte
+	salt       []byte
 	expiration bool
 }
 
 // NewVerifier returns an initialized Verifier. If expiration is 0, expirations are not enforced.
-func NewVerifier(srv imageserver.Server, key string, expiration time.Duration) imageserver.Server {
+func NewVerifier(srv imageserver.Server, key, salt string, expiration time.Duration) imageserver.Server {
 	return &Verifier{
 		Next:       srv,
 		key:        []byte(key),
+		salt:       []byte(salt),
 		expiration: expiration > 0,
 	}
 }
@@ -64,7 +66,7 @@ func (srv *Verifier) Get(params imageserver.Params) (*imageserver.Image, error) 
 		}
 	}
 
-	ok, err := verifyHMAC([]byte(params.String()), srv.key, parts[0])
+	ok, err := verifyHMAC([]byte(params.String()), srv.key, srv.salt, parts[0])
 	if err != nil {
 		return nil, err
 	} else if !ok {
@@ -78,13 +80,15 @@ func (srv *Verifier) Get(params imageserver.Params) (*imageserver.Image, error) 
 // Signer is an http.Handler that signs the request URL + query parameters and redirects to the signed URL.
 type Signer struct {
 	key     []byte
+	salt    []byte
 	expires time.Duration
 }
 
 // NewSigner returns an initialized HMACSigner. If expires is 0, then expiration is not computed.
-func NewSigner(key []byte, expires time.Duration) *Signer {
+func NewSigner(key, salt []byte, expires time.Duration) *Signer {
 	return &Signer{
 		key:     key,
+		salt:    salt,
 		expires: expires,
 	}
 }
@@ -102,26 +106,32 @@ func (s *Signer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		params.Set(param, exp.UnixMilli())
 		req.URL.RawQuery += fmt.Sprintf("&%s=%d", param, exp.UnixMilli())
 	}
-	hash := signHMAC([]byte(params.String()), s.key)
+	hash := signHMAC([]byte(params.String()), s.key, s.salt)
 	http.Redirect(w, req, fmt.Sprintf("/%s/%s?%s", hash, req.URL.Path, req.URL.Query().Encode()), http.StatusTemporaryRedirect)
 }
 
 // signHMAC is the primitive signer, using sha256 and returning a base64 URL-encoded string
-func signHMAC(msg, key []byte) string {
+func signHMAC(msg, key, salt []byte) string {
 	mac := hmac.New(sha256.New, key)
+	if len(salt) > 0 {
+		mac.Write(salt)
+	}
 	mac.Write(msg)
 	macSum := mac.Sum(nil)
 	return base64.RawURLEncoding.EncodeToString(macSum)
 }
 
 // verifyHMAC returns true iff the base64-decoded hash matches the msg sum
-func verifyHMAC(msg, key []byte, hash string) (bool, error) {
+func verifyHMAC(msg, key, salt []byte, hash string) (bool, error) {
 	sig, err := base64.RawURLEncoding.DecodeString(hash)
 	if err != nil {
 		return false, err
 	}
 
 	mac := hmac.New(sha256.New, key)
+	if len(salt) > 0 {
+		mac.Write(salt)
+	}
 	mac.Write(msg)
 
 	return hmac.Equal(sig, mac.Sum(nil)), nil

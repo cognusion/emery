@@ -32,6 +32,7 @@ var (
 	awsS3bucket  string
 
 	hmacKey      string
+	hmacSalt     string
 	hmacDuration time.Duration
 )
 
@@ -48,6 +49,7 @@ func init() {
 	pflag.StringVar(&flagGroupcachePeers, "groupcache-peers", flagGroupcachePeers, "Groupcache peers")
 
 	pflag.StringVar(&hmacKey, "key", "", "Enable and verify request signatures using HMAC")
+	pflag.StringVar(&hmacSalt, "salt", "", "With --key, salts the plaintext before summing")
 	pflag.DurationVar(&hmacDuration, "signduration", 0, "With --key, signatures expire after so long")
 	pflag.Parse()
 
