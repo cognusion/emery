@@ -37,15 +37,15 @@ func startHTTPServer() {
 	hmac.DebugOut = DebugOut
 
 	http.Handle("/", http.StripPrefix("/", newImageHTTPHandler()))
-	if hmacKey != "" {
-		hs := hmac.NewSigner([]byte(hmacKey), []byte(hmacSalt), hmacDuration)
+	if config.GetString(ConfigHMACKey) != "" {
+		hs := hmac.NewSigner([]byte(config.GetString(ConfigHMACKey)), []byte(config.GetString(ConfigHMACSalt)), config.GetDuration(ConfigHMACExpiration))
 
 		http.Handle("/_sign/", http.StripPrefix("/_sign/", hs))
 	}
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 	initGroupcacheHTTPPool() // it automatically registers itself to "/_groupcache"
 	http.HandleFunc("/stats", groupcacheStatsHTTPHandler)
-	err := http.ListenAndServe(flagHTTP, nil)
+	err := http.ListenAndServe(config.GetString(ConfigListen), nil)
 	if err != nil {
 		panic(err)
 	}
@@ -67,14 +67,14 @@ func newImageHTTPHandler() http.Handler {
 }
 
 func newServer() imageserver.Server {
-	srv, err := NewS3Server(awsRegion, awsAccessKey, awsSecretKey, awsS3bucket)
+	srv, err := NewS3Server(config.GetString(ConfigAwsRegion), config.GetString(ConfigAwsAccessKey), config.GetString(ConfigAwsSecretKey), config.GetString(ConfigS3Bucket))
 	if err != nil {
 		panic(err)
 	}
 	srv = newServerImage(srv)
 	srv = newServerGroupcache(srv)
-	if hmacKey != "" {
-		srv = hmac.NewVerifier(srv, hmacKey, hmacSalt, hmacDuration)
+	if config.GetString(ConfigHMACKey) != "" {
+		srv = hmac.NewVerifier(srv, config.GetString(ConfigHMACKey), config.GetString(ConfigHMACSalt), config.GetDuration(ConfigHMACExpiration))
 	}
 	return srv
 }
@@ -97,22 +97,23 @@ func newServerImage(srv imageserver.Server) imageserver.Server {
 }
 
 func newServerGroupcache(srv imageserver.Server) imageserver.Server {
-	if flagGroupcache <= 0 {
+	if config.GetInt64(ConfigGroupCacheSize) <= 0 {
+		// No groupcache for you
 		return srv
 	}
 	return imageserver_cache_groupcache.NewServer(
 		srv,
 		imageserver_cache.NewParamsHashKeyGenerator(sha256.New),
 		groupcacheName,
-		flagGroupcache,
+		config.GetInt64(ConfigGroupCacheSize),
 	)
 }
 
 func initGroupcacheHTTPPool() {
-	self := (&url.URL{Scheme: "http", Host: flagHTTP}).String()
+	self := (&url.URL{Scheme: "http", Host: config.GetString(ConfigListen)}).String()
 	var peers []string
 	peers = append(peers, self)
-	for _, p := range strings.Split(flagGroupcachePeers, ",") {
+	for _, p := range strings.Split(config.GetString(ConfigGroupCachePeers), ",") {
 		if p == "" {
 			continue
 		}
