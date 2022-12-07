@@ -85,10 +85,10 @@ type Signer struct {
 }
 
 // NewSigner returns an initialized HMACSigner. If expires is 0, then expiration is not computed.
-func NewSigner(key, salt []byte, expires time.Duration) *Signer {
+func NewSigner(key, salt string, expires time.Duration) *Signer {
 	return &Signer{
-		key:     key,
-		salt:    salt,
+		key:     []byte(key),
+		salt:    []byte(salt),
 		expires: expires,
 	}
 }

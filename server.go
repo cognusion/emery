@@ -38,7 +38,7 @@ func startHTTPServer() {
 
 	http.Handle("/", http.StripPrefix("/", newImageHTTPHandler()))
 	if config.GetString(ConfigHMACKey) != "" {
-		hs := hmac.NewSigner([]byte(config.GetString(ConfigHMACKey)), []byte(config.GetString(ConfigHMACSalt)), config.GetDuration(ConfigHMACExpiration))
+		hs := hmac.NewSigner(config.GetString(ConfigHMACKey), config.GetString(ConfigHMACSalt), config.GetDuration(ConfigHMACExpiration))
 
 		http.Handle("/_sign/", http.StripPrefix("/_sign/", hs))
 	}
