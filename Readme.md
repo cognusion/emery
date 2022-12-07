@@ -1,10 +1,10 @@
 
 # Emery
 
-An **WORK IN PROGRESS** imageserver that is backed by S3, fronted by groupcache, and supports HMAC
+A **WORK IN PROGRESS** imageserver that is backed by S3, fronted by groupcache, and supports HMAC
 signing and verification of URLs
 
-## example:
+## example
 
 ```bash
 $ ./emery --listen=:8081 --groupcache-peers=:8082,:8083 --s3bucket myimage-test --key MYK3Yc00l --expiration 30m &
