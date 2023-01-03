@@ -53,6 +53,13 @@ func (srv *Verifier) Get(params imageserver.Params) (*imageserver.Image, error) 
 	}
 	params.Set("source", parts[1]) // set source without the hmac
 
+	ok, err := verifyHMAC([]byte(params.String()), srv.key, srv.salt, parts[0])
+	if err != nil {
+		return nil, err
+	} else if !ok {
+		return nil, NotValidError
+	}
+
 	if srv.expiration {
 		exp, perr := params.GetInt64(param)
 		if perr != nil {
@@ -64,13 +71,6 @@ func (srv *Verifier) Get(params imageserver.Params) (*imageserver.Image, error) 
 		if !time.Now().Before(expTime) {
 			return nil, ExpiredError
 		}
-	}
-
-	ok, err := verifyHMAC([]byte(params.String()), srv.key, srv.salt, parts[0])
-	if err != nil {
-		return nil, err
-	} else if !ok {
-		return nil, NotValidError
 	}
 
 	// carry on!
