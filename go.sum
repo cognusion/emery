@@ -59,8 +59,8 @@ github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghf
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cognusion/go-timings v1.0.0 h1:BIJH9nj46an/bp3L6FCXeeRwTDeKNxu7uSE8xdO2V8w=
 github.com/cognusion/go-timings v1.0.0/go.mod h1:M2IjK6Sr6/YTlm3Jws1wL7NUdn+28XVEkTac529GlbY=
-github.com/cognusion/imageserver v0.0.0-20231216145402-76eb7603f89f h1:ROO5avM2dbV7BapWKNY8q4wp/k/vBerA/OlLS2bfGLI=
-github.com/cognusion/imageserver v0.0.0-20231216145402-76eb7603f89f/go.mod h1:AD9LSBYWX0vL8S7vj5fD5DrHa8ZjnveF0xtdx3bcRow=
+github.com/cognusion/imageserver v1.0.0 h1:1a9IOIx0p8waB8KfFCHliXXq5k70ZtCt19LVisGp2wE=
+github.com/cognusion/imageserver v1.0.0/go.mod h1:AD9LSBYWX0vL8S7vj5fD5DrHa8ZjnveF0xtdx3bcRow=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.13+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-semver v0.3.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=

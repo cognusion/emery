@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.15.7
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.47.5
 	github.com/cognusion/go-timings v1.0.0
-	github.com/cognusion/imageserver v0.0.0-20231216145402-76eb7603f89f
+	github.com/cognusion/imageserver v1.0.0
 	github.com/disintegration/gift v1.2.1
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
 	github.com/smartystreets/goconvey v1.7.2
