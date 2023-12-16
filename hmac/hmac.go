@@ -1,6 +1,6 @@
 package hmac
 
-// A variant of his has been submitted as https://github.com/pierrre/imageserver/pull/29
+// A variant of his has been submitted as https://github.com/cognusion/imageserver/pull/29
 // to be an official "http/hmac". If that gets merged this will disappear.
 import (
 	"crypto/hmac"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pierrre/imageserver"
+	"github.com/cognusion/imageserver"
 )
 
 // Error constants retured by various functions.

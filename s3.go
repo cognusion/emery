@@ -1,6 +1,6 @@
 package main
 
-// A variant of his has been submitted as https://github.com/pierrre/imageserver/pull/28
+// A variant of his has been submitted as https://github.com/cognusion/imageserver/pull/28
 // to be an official "source/s3". If that gets merged this will disappear.
 import (
 	"context"
@@ -16,7 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	"github.com/pierrre/imageserver"
+	"github.com/cognusion/imageserver"
 )
 
 // Server is a imageserver.Server implementation that gets the Image from an S3 URL.
@@ -101,7 +101,7 @@ func (srv *Server) Get(params imageserver.Params) (*imageserver.Image, error) {
 	}
 
 	// pre-allocate in memory buffer, where headObject type is *s3.HeadObjectOutput
-	buf := make([]byte, int(hoo.ContentLength))
+	buf := make([]byte, int(*hoo.ContentLength))
 	// wrap with aws.WriteAtBuffer
 	w := manager.NewWriteAtBuffer(buf)
 
